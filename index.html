@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>애플(AAPL) 주가 10대 통계 분석 대시보드</title>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- PapaParse for high-performance CSV reading -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="navbar">
+    <div class="nav-left">
+      <div class="logo-icon"><i class="fa-brands fa-apple"></i></div>
+      <div>
+        <h1>Apple Inc. (AAPL) 주가 통계 분석 대시보드</h1>
+        <p class="subtitle">2010.07 ~ 2020.07 10개년 시계열 10대 계량 통계 분석 리포트</p>
+      </div>
+    </div>
+    <div class="nav-right">
+      <label for="csvFileInput" class="btn btn-outline">
+        <i class="fa-solid fa-file-arrow-up"></i> 다른 CSV 파일 불러오기
+      </label>
+      <input type="file" id="csvFileInput" accept=".csv" style="display:none;">
+      <button id="refreshBtn" class="btn btn-primary">
+        <i class="fa-solid fa-rotate-right"></i> 기본 데이터 로드
+      </button>
+    </div>
+  </header>
+
+  <!-- Top Metrics Bar -->
+  <section class="metrics-grid" id="summaryMetrics">
+    <div class="metric-card">
+      <div class="metric-label">총 거래일수 (N)</div>
+      <div class="metric-val" id="metricTotalDays">-</div>
+      <div class="metric-sub" id="metricDateRange">기간: 계산 중...</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">시작 / 최종 종가</div>
+      <div class="metric-val" id="metricStartEndPrice">-</div>
+      <div class="metric-sub" id="metricTotalReturn">총 수익률: -</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">연평균 성장률 (CAGR)</div>
+      <div class="metric-val text-success" id="metricCAGR">-</div>
+      <div class="metric-sub" id="metricAnnVol">연환산 변동성: -</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">샤프 지수 (Rf=1.5%)</div>
+      <div class="metric-val text-primary" id="metricSharpe">-</div>
+      <div class="metric-sub" id="metricMDD">최대 낙폭(MDD): -</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">일일 95% VaR (손실위험)</div>
+      <div class="metric-val text-warning" id="metricVaR">-</div>
+      <div class="metric-sub" id="metricSkewKurt">왜도: - / 첨도: -</div>
+    </div>
+  </section>
+
+  <!-- Tabs Navigation -->
+  <nav class="tabs-container">
+    <div class="tabs-scroll">
+      <button class="tab-btn active" data-tab="tab1"><i class="fa-solid fa-chart-line"></i> 1. 추세 & 이동평균 (Golden Cross)</button>
+      <button class="tab-btn" data-tab="tab2"><i class="fa-solid fa-chart-pie"></i> 2. 5수치 요약 & 박스플롯</button>
+      <button class="tab-btn" data-tab="tab3"><i class="fa-solid fa-chart-bar"></i> 3. 일일수익률 분포 & 왜도/첨도</button>
+      <button class="tab-btn" data-tab="tab4"><i class="fa-solid fa-chart-area"></i> 4. 볼린저 밴드 (±2σ)</button>
+      <button class="tab-btn" data-tab="tab5"><i class="fa-solid fa-bolt"></i> 5. 롤링 연환산 변동성</button>
+      <button class="tab-btn" data-tab="tab6"><i class="fa-solid fa-arrow-trend-down"></i> 6. 드로우다운 (MDD 분석)</button>
+      <button class="tab-btn" data-tab="tab7"><i class="fa-solid fa-arrows-spin"></i> 7. 시계열 자기상관 (ACF)</button>
+      <button class="tab-btn" data-tab="tab8"><i class="fa-solid fa-braille"></i> 8. 가격변동 vs 거래량 회귀분석</button>
+      <button class="tab-btn" data-tab="tab9"><i class="fa-solid fa-calendar-days"></i> 9. 월별 계절성 통계 (Seasonality)</button>
+      <button class="tab-btn" data-tab="tab10"><i class="fa-solid fa-shield-halved"></i> 10. VaR & CVaR 위험 분석</button>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="dashboard-body">
+
+    <!-- TAB 1: Trend & Moving Averages -->
+    <div class="tab-content active" id="tab1">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-chart-line text-blue"></i> 1. 시계열 추세 분석 및 장·단기 이동평균선 (Golden / Dead Cross)</h2>
+            <p class="desc">종가(Close)와 단기(20일), 중기(60일), 장기(200일) 단순이동평균선(SMA)을 산출하여 전반적인 강세/약세 추세 및 골든크로스를 분석합니다.</p>
+          </div>
+          <div class="legend-badges">
+            <span class="badge" style="background:#2563eb;">종가</span>
+            <span class="badge" style="background:#f59e0b;">SMA 20</span>
+            <span class="badge" style="background:#10b981;">SMA 60</span>
+            <span class="badge" style="background:#ef4444;">SMA 200</span>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartMA"></canvas>
+        </div>
+        <div class="stats-panel" id="statsMA"></div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Five Number Summary & Box Plot -->
+    <div class="tab-content" id="tab2">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-chart-pie text-green"></i> 2. 5수치 요약 (Five-Number Summary) 및 이상치(IQR) 탐지</h2>
+            <p class="desc">주요 컬럼(Open, High, Low, Close, Volume)에 대한 최소값, 제1사분위수(Q1), 중앙값(Median), 제3사분위수(Q3), 최대값 및 IQR 기반 이상치를 산출합니다.</p>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="tableFiveSummary">
+            <thead>
+              <tr>
+                <th>변수명</th>
+                <th>평균 (Mean)</th>
+                <th>표준편차 (Std)</th>
+                <th>최소값 (Min)</th>
+                <th>Q1 (25%)</th>
+                <th>중앙값 (50%)</th>
+                <th>Q3 (75%)</th>
+                <th>최대값 (Max)</th>
+                <th>IQR</th>
+                <th>이상치 개수</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="chart-wrapper mt-3">
+          <canvas id="chartBoxSim"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Daily Return Distribution & Normality -->
+    <div class="tab-content" id="tab3">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-chart-bar text-purple"></i> 3. 일일 수익률 분포 및 정규성 검정 (왜도 & 첨도)</h2>
+            <p class="desc">일일 로그수익률의 히스토그램을 작성하고, 정규분포(가우시안 곡선)와 비교하여 주식 수익률 특유의 팻테일(Fat-tail) 및 비대칭성을 확인합니다.</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartDistribution"></canvas>
+        </div>
+        <div class="stats-panel" id="statsDist"></div>
+      </div>
+    </div>
+
+    <!-- TAB 4: Bollinger Bands -->
+    <div class="tab-content" id="tab4">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-chart-area text-amber"></i> 4. 볼린저 밴드 (Bollinger Bands, 20일 ±2σ) 및 %B 밴드폭 분석</h2>
+            <p class="desc">20일 이동평균선을 중심으로 2배 표준편차 상·하단 밴드를 형성하여 과매수, 과매도 구간 및 변동성 수축/확장 사이클을 포착합니다.</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartBollinger"></canvas>
+        </div>
+        <div class="stats-panel" id="statsBB"></div>
+      </div>
+    </div>
+
+    <!-- TAB 5: Rolling Volatility -->
+    <div class="tab-content" id="tab5">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-bolt text-red"></i> 5. 30일 / 90일 롤링 연환산 변동성 (Rolling Annualized Volatility)</h2>
+            <p class="desc">일일 수익률의 표준편차에 \(\sqrt{252}\)를 곱하여 연환산 변동성을 시계열로 추적하고, 시장 급변 구간(예: 2020 코로나 쇼크)을 진단합니다.</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartVolatility"></canvas>
+        </div>
+        <div class="stats-panel" id="statsVol"></div>
+      </div>
+    </div>
+
+    <!-- TAB 6: Drawdown Analysis (MDD) -->
+    <div class="tab-content" id="tab6">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-arrow-trend-down text-rose"></i> 6. 드로우다운 (Drawdown) 및 최대 낙폭 (MDD) 분석</h2>
+            <p class="desc">역대 최고점(Peak) 대비 하락률을 연속 추적하여 투자자가 견뎌야 했던 최대 손실폭(Maximum Drawdown)과 회복 기간을 계측합니다.</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartDrawdown"></canvas>
+        </div>
+        <div class="stats-panel" id="statsMDD"></div>
+      </div>
+    </div>
+
+    <!-- TAB 7: Autocorrelation (ACF) -->
+    <div class="tab-content" id="tab7">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-arrows-spin text-teal"></i> 7. 시계열 자기상관분석 (Autocorrelation Function, ACF Lag 1~30)</h2>
+            <p class="desc">수익률 시계열의 시차(Lag 1~30)별 피어슨 상관계수를 계산하여 이전 일자의 수익률이 미래 수익률에 미치는 잔차 독립성 및 효율적 시장 가설을 점검합니다.</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartACF"></canvas>
+        </div>
+        <div class="stats-panel" id="statsACF"></div>
+      </div>
+    </div>
+
+    <!-- TAB 8: Price Change vs Volume Regression -->
+    <div class="tab-content" id="tab8">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-braille text-indigo"></i> 8. 거래량(Volume) vs 가격 변동률(Return) 선형회귀 분석 (OLS)</h2>
+            <p class="desc">거래량과 절대 가격변동폭(|Return|)의 산점도 및 최소자승법(OLS) 회귀선, 결정계수(\(R^2\)), 피어슨 상관계수를 도출합니다.</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartRegression"></canvas>
+        </div>
+        <div class="stats-panel" id="statsReg"></div>
+      </div>
+    </div>
+
+    <!-- TAB 9: Monthly Seasonality -->
+    <div class="tab-content" id="tab9">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-calendar-days text-emerald"></i> 9. 월별 계절성 및 요일 효과 통계 (Seasonality & Day-of-Week Effect)</h2>
+            <p class="desc">10개년간 1월부터 12월까지의 월평균 수익률 및 상승 확률(승률)을 집계하여 애플 주가의 캘린더 아노말리(계절성)를 확인합니다.</p>
+          </div>
+        </div>
+        <div class="chart-grid-2">
+          <div class="chart-wrapper-half">
+            <canvas id="chartMonthly"></canvas>
+          </div>
+          <div class="chart-wrapper-half">
+            <canvas id="chartWeekday"></canvas>
+          </div>
+        </div>
+        <div class="stats-panel" id="statsSeason"></div>
+      </div>
+    </div>
+
+    <!-- TAB 10: Value at Risk (VaR & CVaR) -->
+    <div class="tab-content" id="tab10">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fa-solid fa-shield-halved text-orange"></i> 10. 위험 가치 계량 분석 (Value at Risk & Expected Shortfall)</h2>
+            <p class="desc">역사적 시뮬레이션(Historical) 및 모수적(Parametric Normal) 기법으로 95% 및 99% 신뢰수준의 1일 VaR와 조건부 VaR(CVaR/Expected Shortfall)를 산출합니다.</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartVaR"></canvas>
+        </div>
+        <div class="stats-panel" id="statsVaRPanel"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>HTML5, CSS3, ES6 Vanilla JS & Chart.js 기반 자체 제작 대시보드 | 데이터 원본: <code>애플 주가.csv</code></p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

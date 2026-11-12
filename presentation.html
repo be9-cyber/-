@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>애플(AAPL) 10개년 주가 계량 통계 분석 - 10분 발표 프레젠테이션</title>
+  <!-- Chart.js CDN for live interactive slide charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="presentation.css">
+</head>
+<body>
+
+  <!-- Top Slide Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Slide Header Controls -->
+  <header class="slide-header">
+    <div class="slide-meta">
+      <span class="badge"><i class="fa-brands fa-apple"></i> AAPL Quant Report</span>
+      <span class="slide-counter" id="slideCounter">1 / 12</span>
+    </div>
+    <div class="slide-actions">
+      <span class="timer-badge" id="speechTimer" title="발표 권장 타이머 (클릭하여 리셋)"><i class="fa-solid fa-clock"></i> 00:00 (목표: 10분)</span>
+      <button class="icon-btn" id="fsBtn" title="전체화면 전환 (단축키: F)"><i class="fa-solid fa-expand"></i></button>
+      <a href="index.html" class="icon-btn" title="분석 대시보드로 이동" target="_blank"><i class="fa-solid fa-table-columns"></i></a>
+    </div>
+  </header>
+
+  <!-- Slide Deck Container (Click Left: Prev, Click Right: Next) -->
+  <main class="deck-container" id="deckContainer">
+    <!-- Click Zones for Intuitive Navigation -->
+    <div class="touch-zone touch-zone-left" id="touchLeft" title="이전 슬라이드 (클릭 / 터치 / ← 키)">
+      <div class="zone-hint"><i class="fa-solid fa-chevron-left"></i></div>
+    </div>
+    <div class="touch-zone touch-zone-right" id="touchRight" title="다음 슬라이드 (클릭 / 터치 / → 키)">
+      <div class="zone-hint"><i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+
+    <!-- ==================== SLIDE 1: Title ==================== -->
+    <section class="slide active" data-slide="1" data-time="0:00 ~ 0:40 (40초)">
+      <div class="slide-inner title-slide">
+        <div class="brand-badge"><i class="fa-brands fa-apple"></i> Apple Inc. (NASDAQ: AAPL)</div>
+        <h1 class="main-title">10개년 주가 시계열 데이터 기반<br><span class="highlight-text">10대 계량 통계 분석</span> 리포트</h1>
+        <p class="main-subtitle">2,518개 거래일(2010.07 ~ 2020.07)의 일봉 데이터를 통한 수익률, 변동성, 팻테일 및 리스크 구조 규명</p>
+        
+        <div class="title-meta-grid">
+          <div class="meta-item"><i class="fa-solid fa-database"></i> <strong>분석 표본</strong> 2,518 거래일 전수</div>
+          <div class="meta-item"><i class="fa-solid fa-chart-line"></i> <strong>종가 변동</strong> $35.97 → $383.68 (+966%)</div>
+          <div class="meta-item"><i class="fa-solid fa-stopwatch"></i> <strong>예상 발표 시간</strong> 약 10분 (12 슬라이드)</div>
+        </div>
+
+        <div class="navigation-guide">
+          <span><i class="fa-regular fa-hand-pointer"></i> <strong>화면 오른쪽/왼쪽 터치(클릭)</strong> 또는 <strong>방향키 (← / →), Space</strong>로 넘김</span>
+          <span class="fs-guide"><i class="fa-solid fa-expand"></i> <strong>'F' 키</strong>를 누르면 전체 화면으로 전환됩니다.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 2: Executive Summary ==================== -->
+    <section class="slide" data-slide="2" data-time="0:40 ~ 1:30 (50초)">
+      <div class="slide-inner">
+        <div class="slide-tag">Executive Summary</div>
+        <h2 class="slide-title">10년 성과 및 핵심 계량 지표 요약</h2>
+        <p class="slide-desc">지난 10년간 애플은 복리 26.7%의 폭발적 성장을 달성했으나, 이면에는 극단적 변동성과 40% 이상의 MDD가 존재했습니다.</p>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-title">누적 수익률 (Total Return)</div>
+            <div class="kpi-value text-emerald">+966.6%</div>
+            <div class="kpi-sub">$35.97 → $383.68 (약 10.7배 성장)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">연평균 성장률 (CAGR)</div>
+            <div class="kpi-value text-blue">26.7%</div>
+            <div class="kpi-sub">S&P 500 연평균 대비 약 2배 상회</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">연환산 변동성 (Annual Vol)</div>
+            <div class="kpi-value text-amber">27.6%</div>
+            <div class="kpi-sub">일일 변동성: 1.74% (장기 평균)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">샤프 지수 (Sharpe Ratio)</div>
+            <div class="kpi-value text-indigo">0.91</div>
+            <div class="kpi-sub">무위험 수익률 Rf = 1.5% 기준</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">최대 낙폭 (Max Drawdown)</div>
+            <div class="kpi-value text-rose">-44.4%</div>
+            <div class="kpi-sub">2012-2013 아이폰 성장 둔화 조정기</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">일일 95% 위험가치 (1d VaR)</div>
+            <div class="kpi-value text-warning">-2.64%</div>
+            <div class="kpi-sub">1억 투자 시 1일 허용 손실 264만원</div>
+          </div>
+        </div>
+
+        <div class="speech-note">
+          <strong><i class="fa-solid fa-microphone-lines"></i> 발표 멘트:</strong> "첫 번째 핵심 요약입니다. 애플은 10년간 10.7배라는 경이적인 누적 수익을 기록했습니다. 하지만 샤프 지수 0.91과 최대 낙폭 -44.4%가 보여주듯, 이 성과는 상당한 변동성 리스크를 감내한 대가였습니다."
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 3: Moving Averages & Trend ==================== -->
+    <section class="slide" data-slide="3" data-time="1:30 ~ 2:20 (50초)">
+      <div class="slide-inner">
+        <div class="slide-tag">01. Trend & Moving Averages</div>
+        <h2 class="slide-title">시계열 추세 및 이동평균선 (골든 / 데드크로스)</h2>
+        <div class="split-layout">
+          <div class="split-chart">
+            <canvas id="slideChart1"></canvas>
+          </div>
+          <div class="split-info">
+            <div class="stat-highlight">
+              <h3><i class="fa-solid fa-compass"></i> 추세 분석 핵심 발견</h3>
+              <ul>
+                <li><strong>200일선(장기 지지선):</strong> 10년간 200일 이동평균선 위에 머무른 거래일이 전체의 <strong>78.4%</strong>로 장기 구조적 상승장 유지.</li>
+                <li><strong>골든크로스 신뢰도:</strong> 50/200 골든크로스 발생 후 평균 9개월 이상 강세장 지속 확인.</li>
+                <li><strong>2020년 팬데믹 V자 반등:</strong> 3월 급락 이후 20일선 급반등 및 정배열 복귀.</li>
+              </ul>
+            </div>
+            <div class="speech-note">
+              <strong><i class="fa-solid fa-microphone-lines"></i> 발표 멘트:</strong> "20일, 60일, 200일 이동평균선을 중첩해보면 애플 주가가 200일선을 하회한 시기는 2012년 말, 2015년 중국 충격, 2018년 미중 무역분쟁 등 소수에 불과하며 78% 이상의 기간 동안 정배열 강세를 지켰습니다."
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 4: Five-Number Summary & Outliers ==================== -->
+    <section class="slide" data-slide="4" data-time="2:20 ~ 3:10 (50초)">
+      <div class="slide-inner">
+        <div class="slide-tag">02. Five-Number Summary & Outliers</div>
+        <h2 class="slide-title">5수치 요약 및 이상치(Outliers) 탐지</h2>
+        <div class="split-layout">
+          <div class="split-table">
+            <table class="slide-table">
+              <thead>
+                <tr>
+                  <th>항목</th>
+                  <th>최소 (Min)</th>
+                  <th>Q1 (25%)</th>
+                  <th>중앙값 (Median)</th>
+                  <th>Q3 (75%)</th>
+                  <th>최대 (Max)</th>
+                  <th>IQR</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>종가 ($)</strong></td>
+                  <td>$35.97</td>
+                  <td>$78.29</td>
+                  <td>$115.82</td>
+                  <td>$172.97</td>
+                  <td>$383.68</td>
+                  <td>$94.68</td>
+                </tr>
+                <tr>
+                  <td><strong>고가 ($)</strong></td>
+                  <td>$36.42</td>
+                  <td>$78.96</td>
+                  <td>$116.51</td>
+                  <td>$174.50</td>
+                  <td>$385.27</td>
+                  <td>$95.54</td>
+                </tr>
+                <tr>
+                  <td><strong>거래량(백만)</strong></td>
+                  <td>11.3M</td>
+                  <td>33.2M</td>
+                  <td>58.4M</td>
+                  <td>110.2M</td>
+                  <td>470.2M</td>
+                  <td>77.0M</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="outlier-box">
+              <i class="fa-solid fa-triangle-exclamation text-amber"></i>
+              <strong>Tukey Fences 이상치 분석:</strong> 종가의 경우 $315 이상의 2020년 상반기 주가가 통계적 상단 이상치(Outlier)로 감지되었으며, 거래량은 실적 발표일에 2.5억 주를 넘는 극단치가 72일 발생했습니다.
+            </div>
+          </div>
+          <div class="split-info">
+            <div class="stat-highlight">
+              <h3><i class="fa-solid fa-layer-group"></i> 사분위 분포의 시사점</h3>
+              <ul>
+                <li>종가 중앙값은 <strong>$115.82</strong>로, 2020년 7월 종가($383)는 역사적 중앙값의 3.3배 수준.</li>
+                <li>거래량의 왜곡: 2010년대 초반 대비 주가 상승에 따라 후반부로 갈수록 절대 거래량 수는 감소 추세.</li>
+              </ul>
+            </div>
+            <div class="speech-note">
+              <strong><i class="fa-solid fa-microphone-lines"></i> 발표 멘트:</strong> "박스플롯 기반의 5수치 요약을 보면, 2020년 종가는 통계적 상한 펜스를 넘어서는 이상치 구간에 진입하여 역사적 레인지 상단에 위치함을 확인했습니다."
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 5: Return Distribution & Fat-Tails ==================== -->
+    <section class="slide" data-slide="5" data-time="3:10 ~ 4:00 (50초)">
+      <div class="slide-inner">
+        <div class="slide-tag">03. Return Distribution & Normality</div>
+        <h2 class="slide-title">일일 수익률 분포: 팻테일(Fat-Tail)과 정규성 기각</h2>
+        <div class="split-layout">
+          <div class="split-chart">
+            <canvas id="slideChart3"></canvas>
+          </div>
+          <div class="split-info">
+            <div class="stat-highlight">
+              <h3><i class="fa-solid fa-bell"></i> 정규분포와의 결정적 차이</h3>
+              <ul>
+                <li><strong>왜도 (Skewness): -0.22</strong> (좌측 꼬리가 길며, 급락 위험이 급등 빈도보다 큼)</li>
+                <li><strong>초과 첨도 (Kurtosis): 5.14</strong> (정규분포 0 대비 극단적으로 뾰족하며 두꺼운 꼬리)</li>
+                <li><strong>자크-베라 검정:</strong> JB 통계량 2,240 (p-value < 0.001로 <strong>정규분포 가설 강력 기각</strong>)</li>
+              </ul>
+            </div>
+            <div class="speech-note">
+              <strong><i class="fa-solid fa-microphone-lines"></i> 발표 멘트:</strong> "금융공학 모델이 흔히 가정하는 정규분포(빨간선)와 실제 애플 수익률(보라색)을 비교하면, 초과 첨도가 5.14에 달합니다. 즉, 이론적 정규분포보다 '블랙스완' 급등락이 훨씬 빈번하게 일어나는 팻테일 자산입니다."
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 6: Bollinger Bands ==================== -->
+    <section class="slide" data-slide="6" data-time="4:00 ~ 4:50 (50초)">
+      <div class="slide-inner">
+        <div class="slide-tag">04. Bollinger Bands (20 SMA ±2σ)</div>
+        <h2 class="slide-title">볼린저 밴드: 변동성 수축(Squeeze)과 확장 사이클</h2>
+        <div class="split-layout">
+          <div class="split-chart">
+            <canvas id="slideChart4"></canvas>
+          </div>
+          <div class="split-info">
+            <div class="stat-highlight">
+              <h3><i class="fa-solid fa-compress"></i> 밴드폭(%B)과 가격 순응도</h3>
+              <ul>
+                <li><strong>밴드 내 주가 체류율:</strong> 전체 거래일의 <strong>94.8%</strong>가 2σ 밴드 내부에서 형성.</li>
+                <li><strong>변동성 스퀴즈:</strong> 밴드폭이 10% 미만으로 좁혀진 직후에는 85%의 확률로 강력한 추세 폭발 발생.</li>
+                <li><strong>상단 돌파(%B > 1.0):</strong> 강세장에서 상단 밴드를 타고 상승하는 '밴드 워킹(Band Walking)' 패턴 빈출.</li>
+              </ul>
+            </div>
+            <div class="speech-note">
+              <strong><i class="fa-solid fa-microphone-lines"></i> 발표 멘트:</strong> "볼린저 밴드 분석 결과, 주가의 약 95%가 밴드 내에 머물렀으며 밴드가 급격히 좁아지는 스퀴즈 이후에는 항상 큰 시세 분출이 뒤따랐습니다."
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 7: Rolling Volatility Regimes ==================== -->
+    <section class="slide" data-slide="7" data-time="4:50 ~ 5:40 (50초)">
+      <div class="slide-inner">
+        <div class="slide-tag">05. Rolling Volatility (30d & 90d)</div>
+        <h2 class="slide-title">롤링 연환산 변동성: 시장 위기 국면의 포착</h2>
+        <div class="split-layout">
+          <div class="split-chart">
+            <canvas id="slideChart5"></canvas>
+          </div>
+          <div class="split-info">
+            <div class="stat-highlight">
+              <h3><i class="fa-solid fa-fire"></i> 역사적 3대 변동성 쇼크</h3>
+              <ul>
+                <li><strong>2020년 3월 팬데믹 쇼크:</strong> 30일 롤링 변동성 <strong>82.4%</strong>까지 폭증 (10년래 최고).</li>
+                <li><strong>2018년 말 미중 무역분쟁:</strong> 30일 변동성 48.6% 기록.</li>
+                <li><strong>평상시 저변동성 구간:</strong> 2017년 실적 호조기에는 12~15% 수준으로 매우 안정적.</li>
+              </ul>
+            </div>
+            <div class="speech-note">
+              <strong><i class="fa-solid fa-microphone-lines"></i> 발표 멘트:</strong> "30일 및 90일 롤링 변동성을 살펴보면, 2020년 3월 코로나 팬데믹 당시 82.4%라는 기록적인 변동성이 나타났습니다. 평상시 20% 초반 대비 약 4배 수준의 충격이었습니다."
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 8: Drawdown & MDD ==================== -->
+    <section class="slide" data-slide="8" data-time="5:40 ~ 6:30 (50초)">
+      <div class="slide-inner">
+        <div class="slide-tag">06. Drawdown & Maximum Drawdown (MDD)</div>
+        <h2 class="slide-title">최대 낙폭(MDD): 투자자가 견뎌야 했던 고통의 깊이</h2>
+        <div class="split-layout">
+          <div class="split-chart">
+            <canvas id="slideChart6"></canvas>
+          </div>
+          <div class="split-info">
+            <div class="stat-highlight">
+              <h3><i class="fa-solid fa-arrow-down-wide-short"></i> 주요 드로우다운 구간</h3>
+              <ul>
+                <li><strong>역대 MDD: -44.4%</strong> (2012년 9월 $100.30 → 2013년 4월 $55.79)</li>
+                <li><strong>회복 소요 기간(Underwater):</strong> 최고점 회복까지 <strong>약 19개월(412 거래일)</strong> 소요.</li>
+                <li><strong>2020년 코로나 낙폭: -31.4%</strong> 발생했으나 단 3개월 만에 전고점 돌파.</li>
+              </ul>
+            </div>
+            <div class="speech-note">
+              <strong><i class="fa-solid fa-microphone-lines"></i> 발표 멘트:</strong> "최고점 대비 하락률을 나타내는 드로우다운입니다. 10년간 가장 뼈아팠던 순간은 2012년 하반기부터 2013년 상반기까지 이어진 -44.4%의 하락이었으며, 원금 회복에만 19개월이 걸렸습니다."
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 9: Autocorrelation & Market Efficiency ==================== -->
+    <section class="slide" data-slide="9" data-time="6:30 ~ 7:20 (50초)">
+      <div class="slide-inner">
+        <div class="slide-tag">07. Autocorrelation Function (ACF)</div>
+        <h2 class="slide-title">시계열 자기상관분석: 효율적 시장 가설(EMH) 검증</h2>
+        <div class="split-layout">
+          <div class="split-chart">
+            <canvas id="slideChart7"></canvas>
+          </div>
+          <div class="split-info">
+            <div class="stat-highlight">
+              <h3><i class="fa-solid fa-magnifying-glass-chart"></i> 시차(Lag)별 상관성 분석</h3>
+              <ul>
+                <li><strong>Lag 1 자기상관계수: -0.021</strong> (95% 신뢰구간 $\pm 0.039$ 이내 위치)</li>
+                <li><strong>독립성 검정:</strong> Lag 1부터 25까지 대부분의 계수가 0에 수렴하여 통계적 유의성 없음.</li>
+                <li><strong>결론:</strong> 일일 단순 수익률은 <strong>랜덤워크(Random Walk)</strong>에 가까우며, 과거 수익률로 내일 수익률을 선형 예측하는 것은 불가능함(약형 효율적 시장 성립).</li>
+              </ul>
+            </div>
+            <div class="speech-note">
+              <strong><i class="fa-solid fa-microphone-lines"></i> 발표 멘트:</strong> "ACF 분석은 이전 날의 주가 움직임이 다음 날에 영향을 주는가를 봅니다. 분석 결과 모든 시차의 상관계수가 신뢰한계 밴드 내에 있어, 애플 주가는 약형 효율적 시장의 랜덤워크 특성을 완벽히 따릅니다."
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 10: Volume vs Volatility Regression ==================== -->
+    <section class="slide" data-slide="10" data-time="7:20 ~ 8:10 (50초)">
+      <div class="slide-inner">
+        <div class="slide-tag">08. Price Change vs Volume Regression</div>
+        <h2 class="slide-title">거래량 vs 가격 변동폭: OLS 선형 회귀분석</h2>
+        <div class="split-layout">
+          <div class="split-chart">
+            <canvas id="slideChart8"></canvas>
+          </div>
+          <div class="split-info">
+            <div class="stat-highlight">
+              <h3><i class="fa-solid fa-chart-line-up"></i> 거래량과 변동성의 상관관계</h3>
+              <ul>
+                <li><strong>피어슨 상관계수 ($r$): +0.384</strong> (유의미한 양의 상관관계)</li>
+                <li><strong>결정계수 ($R^2$): 14.7%</strong> (거래량이 변동폭의 약 15%를 설명)</li>
+                <li><strong>회귀식 시사점:</strong> 거래량이 1억 주 증가할 때마다 일일 변동폭은 평균 <strong>+0.85%p</strong> 확대되는 '거래량 주도 변동성(Volume-driven Volatility)' 확인.</li>
+              </ul>
+            </div>
+            <div class="speech-note">
+              <strong><i class="fa-solid fa-microphone-lines"></i> 발표 멘트:</strong> "거래량과 가격 변동률의 절대값을 회귀분석한 결과, 상관계수 +0.38로 뚜렷한 양의 상관관계가 나타났습니다. 즉, 거래량이 터지는 날일수록 변동성이 급격히 커짐을 통계적으로 입증했습니다."
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 11: Seasonality & Value at Risk ==================== -->
+    <section class="slide" data-slide="11" data-time="8:10 ~ 9:00 (50초)">
+      <div class="slide-inner">
+        <div class="slide-tag">09 & 10. Seasonality & VaR Risk Modeling</div>
+        <h2 class="slide-title">월별 계절성 아노말리 & VaR / CVaR 위험 계량화</h2>
+        <div class="split-layout">
+          <div class="split-info-col">
+            <div class="stat-highlight">
+              <h3><i class="fa-solid fa-calendar-check"></i> 캘린더 아노말리 (계절성)</h3>
+              <ul>
+                <li><strong>최고 수익 월: 8월 (+4.8%) 및 10월 (+3.9%)</strong> (신형 아이폰 출시 기대감)</li>
+                <li><strong>최저 수익 월: 9월 (-0.8%) 및 5월 (-0.4%)</strong> (신제품 공개 직후 재료 소멸 매도세)</li>
+                <li><strong>요일 효과:</strong> 화요일 평균 수익률이 가장 우세 (+0.18%).</li>
+              </ul>
+            </div>
+          </div>
+          <div class="split-info-col">
+            <div class="stat-highlight">
+              <h3><i class="fa-solid fa-shield-halved"></i> VaR & CVaR 극단 손실 리스크</h3>
+              <ul>
+                <li><strong>95% 1일 VaR: -2.64%</strong> (20일에 한 번은 -2.64% 이상 손실 가능)</li>
+                <li><strong>99% 1일 VaR: -4.38%</strong> (100일에 한 번은 -4.38% 이상 손실 가능)</li>
+                <li><strong>95% CVaR (Expected Shortfall): -3.95%</strong> (하위 5% 최악 구간 발생 시 평균 -3.95% 손실)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="speech-note" style="margin-top:1rem;">
+          <strong><i class="fa-solid fa-microphone-lines"></i> 발표 멘트:</strong> "계절성 측면에서 애플은 8월과 10월에 강하고 9월 발표 직후 차익실현으로 약세를 보였습니다. 리스크 관리 측면에서는 1일 95% VaR가 -2.64%, 극단 손실 평균인 CVaR가 -3.95%로 계측되었습니다."
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 12: Conclusion & QnA ==================== -->
+    <section class="slide" data-slide="12" data-time="9:00 ~ 10:00 (60초)">
+      <div class="slide-inner title-slide">
+        <div class="brand-badge"><i class="fa-solid fa-flag-checkered"></i> 결론 및 전략적 제언</div>
+        <h2 class="main-title" style="font-size:2.2rem; margin-bottom:1rem;">10대 계량 통계 분석의 핵심 시사점</h2>
+        
+        <div class="conclusion-cards">
+          <div class="c-card">
+            <div class="c-num">1</div>
+            <h4>장기 복리 승리</h4>
+            <p>CAGR 26.7%, 200일선 상회 78%로 장기 추세 추종 전략이 극대화된 성과를 창출.</p>
+          </div>
+          <div class="c-card">
+            <div class="c-num">2</div>
+            <h4>팻테일 리스크 대비</h4>
+            <p>초과 첨도 5.14로 정규분포 기반 리스크 모델(VaR)은 실제 손실을 과소평가하므로 CVaR 활용 필수.</p>
+          </div>
+          <div class="c-card">
+            <div class="c-num">3</div>
+            <h4>변동성 스퀴즈 활용</h4>
+            <p>볼린저 밴드 축소 및 거래량 급증 신호는 추세 가속의 핵심 계량적 트리거로 유효.</p>
+          </div>
+        </div>
+
+        <div class="qna-box">
+          <h3><i class="fa-regular fa-comments"></i> 감사합니다. 질문 및 토론을 시작합니다.</h3>
+          <p>대시보드 원본 시연 및 추가 데이터 질의응답 환영</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Slide Footer Navigation Bar -->
+  <footer class="slide-footer">
+    <div class="footer-left">
+      <button class="nav-btn" id="prevBtn"><i class="fa-solid fa-arrow-left"></i> 이전</button>
+      <button class="nav-btn" id="nextBtn">다음 <i class="fa-solid fa-arrow-right"></i></button>
+      <span class="slide-timing" id="slideTiming"><i class="fa-regular fa-clock"></i> 0:00 ~ 0:40</span>
+    </div>
+    <div class="footer-right">
+      <div class="dots-container" id="dotsContainer"></div>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="presentation.js"></script>
+</body>
+</html>
